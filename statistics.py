@@ -7,14 +7,29 @@ from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 
 
-def extract_words(msgs_path: str,
-                  # date, name, qq, msg
-                  msg_filter: Callable[[str, str, str, str], bool] = None,
-                  msg_preprocessor: Callable[[str], str] = None,
-                  word_filter: Callable[[str], bool] = None,
-                  # name, qq
-                  speak_filter: Callable[[str, str], bool] = None) \
+def get_statistics(msgs_path: str,
+                   msg_filter: Callable[[str, str, str, str], bool] = None,
+                   msg_preprocessor: Callable[[str], str] = None,
+                   word_filter: Callable[[str], bool] = None,
+                   speak_filter: Callable[[str, str], bool] = None) \
         -> tuple[list[str], dict[str, int], dict[str, int], dict[str, int], dict[str, str]]:
+    """Read and analyse the given history message file of a QQ group, returns:
+
+        - A list of split words.
+        - A map from each date to message count in that day.
+        - A map from each date when at least one anonymous message is present to anonymous message count in that day.
+        - A map from each qq number to his/her speak count.
+        - A map from each qq number to his/her latest card name.
+
+        Arguments:
+
+        - msgs_path -- path to the exported message history file of a QQ group in txt format.
+        - msg_filter -- an optional predicate that accepts (message date, sender name, sender qq, message) and returns whether the message should be included.
+        - msg_preprocessor -- an optional preprocessor that is applied to each message before it is processed.
+        - word_filter -- an optional predicate that accepts a word and returns whether the word should be included in split word list.
+        - speak_filter -- an optional predicate that accepts (sender name, sender qq) and returns whether the sender's speak count should be increased.
+    """
+
     words = []
     total_counts = {}
     annoy_counts = {}
@@ -191,7 +206,7 @@ def no_annoy_sys_speak_filter(name, qq):
     return qq != "80000000" and qq != "1000000"
 
 
-words_10days, total_counts_10days, annoy_counts_10days, spk_counts, card_names = extract_words(
+words_10days, total_counts_10days, annoy_counts_10days, spk_counts, card_names = get_statistics(
     "./6.0-0924.txt",
     msg_filter=qq_msg_filter_10days,
     msg_preprocessor=qq_msg_preprocessor,
@@ -203,7 +218,7 @@ save_counts_xlsx(total_counts_10days, annoy_counts_10days, "./6.0-2/10days.xlsx"
 save_word_cloud_png(words_10days, "./6.0-2/10days.png")
 
 # for i in range(14, 24):
-#     words_day, total_counts_day, annoy_counts_day, _, _ = extract_words(
+#     words_day, total_counts_day, annoy_counts_day, _, _ = get_statistics(
 #         "./6.0-0924.txt",
 #         msg_filter=qq_msg_filter_sept_x(i),
 #         msg_preprocessor=qq_msg_preprocessor,
