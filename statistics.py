@@ -13,21 +13,21 @@ def get_statistics(msgs_path: str,
                    word_filter: Callable[[str], bool] = None,
                    speak_filter: Callable[[str, str], bool] = None) \
         -> tuple[list[str], dict[str, int], dict[str, int], dict[str, int], dict[str, str]]:
-    """Read and analyse the given history message file of a QQ group, returns:
+    """Read and analyse the given history message file of a QQ group.
+
+        :param msgs_path: path to the exported message history file of a QQ group in txt format.
+        :param msg_filter: an optional predicate that accepts (message date, sender name, sender qq, message) and returns whether the message should be included.
+        :param msg_preprocessor: an optional preprocessor that is applied to each message before it is processed.
+        :param word_filter: an optional predicate that accepts a word and returns whether the word should be included in split word list.
+        :param speak_filter: an optional predicate that accepts (sender name, sender qq) and returns whether the sender's speak count should be increased.
+
+        Returns:
 
         - A list of split words.
         - A map from each date to message count in that day.
         - A map from each date when at least one anonymous message is present to anonymous message count in that day.
         - A map from each qq number to his/her speak count.
         - A map from each qq number to his/her latest card name.
-
-        Arguments:
-
-        - msgs_path -- path to the exported message history file of a QQ group in txt format.
-        - msg_filter -- an optional predicate that accepts (message date, sender name, sender qq, message) and returns whether the message should be included.
-        - msg_preprocessor -- an optional preprocessor that is applied to each message before it is processed.
-        - word_filter -- an optional predicate that accepts a word and returns whether the word should be included in split word list.
-        - speak_filter -- an optional predicate that accepts (sender name, sender qq) and returns whether the sender's speak count should be increased.
     """
 
     words = []
@@ -111,6 +111,9 @@ def save_counts_xlsx(total_counts: dict[str, int],
 
 def save_word_cloud_png(words: list[str],
                         output_path: str = None):
+    """
+    Continuously generates and saves word cloud image, until you feel satisfied and type "1".
+    """
     while True:
         wc = WordCloud(width=800,
                        height=600,
